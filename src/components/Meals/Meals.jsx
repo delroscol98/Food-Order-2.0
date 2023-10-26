@@ -21,6 +21,7 @@ const Meals = () => {
     <ul id="meals">
       {meals.map((meal) => (
         <MealItem
+          meal={meal}
           key={meal.id}
           name={meal.name}
           price={meal.price}
