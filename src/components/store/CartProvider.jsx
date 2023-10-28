@@ -32,14 +32,17 @@ const cartReducer = (state, action) => {
 
   if (action.type == "REMOVE") {
     const existingCartItemIndex = state.items.findIndex(
-      (item) => item.id === action.item.id
+      (item) => item.id === action.payload.item.id
     );
+    console.log(action.item);
     const existingCartItem = state.items[existingCartItemIndex];
 
     let updatedItems;
 
     if (existingCartItem.quantity === 1) {
-      updatedItems = state.items.filter((item) => item.id !== action.item.id);
+      updatedItems = state.items.filter(
+        (item) => item.id !== action.payload.item.id
+      );
     } else {
       const updatedItem = {
         ...existingCartItem,
@@ -62,8 +65,8 @@ const CartProvider = ({ children }) => {
     dispatchCart({ type: "ADD", payload: { item: item } });
   };
 
-  const removeItemFromCart = () => {
-    dispatchCart({ type: "REMOVE", id: id });
+  const removeItemFromCart = (item, id) => {
+    dispatchCart({ type: "REMOVE", payload: { item: item, id: id } });
   };
 
   const cartCtx = {
