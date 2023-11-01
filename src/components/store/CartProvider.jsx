@@ -34,7 +34,6 @@ const cartReducer = (state, action) => {
     const existingCartItemIndex = state.items.findIndex(
       (item) => item.id === action.payload.item.id
     );
-    console.log(action.item);
     const existingCartItem = state.items[existingCartItemIndex];
 
     let updatedItems;
@@ -74,9 +73,6 @@ const CartProvider = ({ children }) => {
     addItem: addItemToCart,
     removeItem: removeItemFromCart,
   };
-
-  console.log(cartCtx);
-
   return (
     <CartContext.Provider value={cartCtx}> {children}</CartContext.Provider>
   );

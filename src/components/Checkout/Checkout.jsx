@@ -19,16 +19,50 @@ const Checkout = () => {
     userProgressCtx.hideCheckout();
   };
 
+  const submitHandler = (event) => {
+    event.preventDefault();
+    const data = new FormData(event.target);
+    const formData = Object.fromEntries(data.entries());
+
+    console.log(formData);
+    console.log(
+      JSON.stringify({
+        order: {
+          items: cartCtx.items,
+          customer: formData,
+        },
+      })
+    );
+
+    fetch(
+      "https://food-order-v2-66876-default-rtdb.firebaseio.com/orders.json",
+      {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          order: {
+            items: cartCtx.items,
+            customer: formData,
+          },
+        }),
+      }
+    );
+  };
+
   return (
     <Modal
       open={userProgressCtx.progress === "checkout"}
-      onClose={userProgressCtx.progress === "checkout" && closeCheckoutHandler}
+      onClose={
+        userProgressCtx.progress === "checkout" ? closeCheckoutHandler : null
+      }
     >
-      <form>
+      <form onSubmit={submitHandler}>
         <h2>Checkout</h2>
         <p>Total Amount: {currencyFormatter.format(cartTotal)}</p>
 
-        <Input label="Full name" type="text" id="full-name" />
+        <Input label="Full name" type="text" id="name" />
         <Input label="Email Address" type="email" id="email" />
         <Input label="Street" type="text" id="street" />
         <div className="control-row">
