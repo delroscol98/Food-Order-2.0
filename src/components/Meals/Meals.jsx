@@ -12,7 +12,8 @@ const Meals = () => {
     data: meals,
   } = useFetch(
     "http://localhost:5173/backend/data/available-meals.json",
-    requestConfig
+    requestConfig,
+    []
   );
 
   if (isLoading) {

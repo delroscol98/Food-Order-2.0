@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 
-const useFetch = (url, requestConfig) => {
-  const [data, setData] = useState([]);
+const useFetch = (url, requestConfig, initialData) => {
+  const [data, setData] = useState(initialData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
 

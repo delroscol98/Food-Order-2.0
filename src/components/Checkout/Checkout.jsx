@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import Error from "../Error/error";
 import useFetch from "../hooks/use-fetch";
 import Modal from "../Modal/Modal";
 import CartContext from "../store/CartContext";
@@ -33,8 +34,13 @@ const Checkout = () => {
     0
   );
 
-  const closeCheckoutHandler = () => {
+  const closeHandler = () => {
     userProgressCtx.hideCheckout();
+  };
+
+  const clearCartHandler = () => {
+    userProgressCtx.hideCheckout();
+    cartCtx.clearCart();
   };
 
   const submitHandler = (event) => {
@@ -48,30 +54,28 @@ const Checkout = () => {
         customer: formData,
       },
     });
-
-    // fetch(
-    //   "https://food-order-v2-66876-default-rtdb.firebaseio.com/orders.json",
-    //   {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       order: {
-    //         items: cartCtx.items,
-    //         customer: formData,
-    //       },
-    //     }),
-    //   }
-    // );
   };
+
+  if (data && !error) {
+    return (
+      <Modal
+        open={userProgressCtx.progress === "checkout"}
+        onClose={clearCartHandler}
+      >
+        <h2>Success!</h2>
+        <p>Your order was submitted sucessfully!</p>
+        <p>Check your email for more details!</p>
+        <p className="modal-actions">
+          <Button onClick={clearCartHandler}>Okay</Button>
+        </p>
+      </Modal>
+    );
+  }
 
   return (
     <Modal
       open={userProgressCtx.progress === "checkout"}
-      onClose={
-        userProgressCtx.progress === "checkout" ? closeCheckoutHandler : null
-      }
+      onClose={userProgressCtx.progress === "checkout" ? closeHandler : null}
     >
       <form onSubmit={submitHandler}>
         <h2>Checkout</h2>
@@ -85,11 +89,19 @@ const Checkout = () => {
           <Input label="City" type="text" id="city" />
         </div>
 
+        {error && <Error title="Failed to submit order" message={error} />}
+
         <p className="modal-actions">
-          <Button type="button" textOnly onClick={closeCheckoutHandler}>
-            Close
-          </Button>
-          <Button>Submit Order</Button>
+          {isLoading ? (
+            <span>Sending order data...</span>
+          ) : (
+            <>
+              <Button type="button" textOnly onClick={closeHandler}>
+                Close
+              </Button>
+              <Button>Submit Order</Button>
+            </>
+          )}
         </p>
       </form>
     </Modal>
