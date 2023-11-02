@@ -1,21 +1,27 @@
-import { useState, useEffect } from "react";
+import Error from "../Error/error";
+import useFetch from "../hooks/use-fetch";
 
 import MealItem from "./MealItem";
 
+const requestConfig = {};
+
 const Meals = () => {
-  const [meals, setMeals] = useState([]);
+  const {
+    isLoading,
+    error,
+    data: meals,
+  } = useFetch(
+    "http://localhost:5173/backend/data/available-meals.json",
+    requestConfig
+  );
 
-  useEffect(() => {
-    const fetchMeals = async () => {
-      const response = await fetch(
-        "http://localhost:5173/backend/data/available-meals.json"
-      );
-      const mealsData = await response.json();
-      setMeals(mealsData);
-    };
+  if (isLoading) {
+    return <p className="center">Still fetching meals...</p>;
+  }
 
-    fetchMeals();
-  }, []);
+  if (error) {
+    return <Error title="Failed to fetch meals" message={error} />;
+  }
 
   return (
     <ul id="meals">

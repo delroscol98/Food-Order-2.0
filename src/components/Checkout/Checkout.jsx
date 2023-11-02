@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import useFetch from "../hooks/use-fetch";
 import Modal from "../Modal/Modal";
 import CartContext from "../store/CartContext";
 import UserProgressContext from "../store/UserProgressContext";
@@ -6,9 +7,26 @@ import Button from "../UI/Button";
 import Input from "../UI/Input";
 import currencyFormatter from "../utilities/formatting";
 
+const requestConfig = {
+  method: "POST",
+  headers: {
+    "Content-type": "application/json",
+  },
+};
+
 const Checkout = () => {
   const cartCtx = useContext(CartContext);
   const userProgressCtx = useContext(UserProgressContext);
+
+  const {
+    isLoading,
+    error,
+    dataFetch: postData,
+    data,
+  } = useFetch(
+    "https://food-order-v2-66876-default-rtdb.firebaseio.com/orders.json",
+    requestConfig
+  );
 
   const cartTotal = cartCtx.items.reduce(
     (totalPrice, item) => totalPrice + item.quantity * item.price,
@@ -24,31 +42,28 @@ const Checkout = () => {
     const data = new FormData(event.target);
     const formData = Object.fromEntries(data.entries());
 
-    console.log(formData);
-    console.log(
-      JSON.stringify({
-        order: {
-          items: cartCtx.items,
-          customer: formData,
-        },
-      })
-    );
+    postData({
+      order: {
+        items: cartCtx.items,
+        customer: formData,
+      },
+    });
 
-    fetch(
-      "https://food-order-v2-66876-default-rtdb.firebaseio.com/orders.json",
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          order: {
-            items: cartCtx.items,
-            customer: formData,
-          },
-        }),
-      }
-    );
+    // fetch(
+    //   "https://food-order-v2-66876-default-rtdb.firebaseio.com/orders.json",
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       order: {
+    //         items: cartCtx.items,
+    //         customer: formData,
+    //       },
+    //     }),
+    //   }
+    // );
   };
 
   return (
